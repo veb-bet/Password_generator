@@ -34,9 +34,9 @@ def calculate_strength(password):
     password (str): Пароль для оценки сложности.
     
     Возвращает:
-    str: Оценка сложности пароля.
+    str: Оценка сложности пароля и цвет для метки.
     """
-    length_score = len(password) / 8  # Чем длиннее, тем лучше
+    length_score = len(password) / 10  # Чем длиннее, тем лучше
     char_types_score = 0
     if any(c in string.ascii_lowercase for c in password):
         char_types_score += 1
@@ -45,20 +45,20 @@ def calculate_strength(password):
     if any(c in string.digits for c in password):
         char_types_score += 1
     if any(c in string.punctuation for c in password):
-        char_types_score += 1
+        char_types_score += 2
 
     # Оценка сложности: чем больше типы символов и длина, тем выше сложность
     complexity = length_score * char_types_score
-    if complexity < 1:
-        return "Очень слабый"
-    elif complexity < 2:
-        return "Слабый"
+    if complexity < 2:
+        return "Очень слабый", "red"
     elif complexity < 3:
-        return "Средний"
+        return "Слабый", "red"
     elif complexity < 4:
-        return "Хороший"
+        return "Средний", "yellow"
+    elif complexity < 5:
+        return "Хороший", "green"
     else:
-        return "Очень хороший"
+        return "Очень хороший", "green"
 
 def on_generate_button_click():
     try:
@@ -69,11 +69,11 @@ def on_generate_button_click():
         password = generate_password(password_length)
         password_label.config(text=f"Пароль: {password}")
         
-        strength = calculate_strength(password)
-        strength_label.config(text=f"Сложность: {strength}")
+        strength, color = calculate_strength(password)
+        strength_label.config(text=f"Сложность: {strength}", foreground=color)
     except ValueError as e:
         password_label.config(text=f"Ошибка: {e}")
-        strength_label.config(text="")
+        strength_label.config(text="", foreground="black")
 
 # Настройка интерфейса Tkinter
 root = tk.Tk()
